@@ -77,7 +77,21 @@ def SVHN(data_path, batch_train, batch_test=None, download=True, train=True, **k
     
     return trainloader, testloader
 
+def MNIST(data_path, batch_train, batch_test=None, download=True, train=True, **kwargs):
+    transform = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize([.1307],[.3081]),
+    ])
 
+    trainset = datasets.MNIST(data_path, train=True, transform=transform, download=True)
+    trainloader = DataLoader(trainset, batch_size=batch_train, shuffle=train, **kwargs)
+
+    testloader = None
+    if batch_test is not None:
+        testset = datasets.MNIST(data_path, train=False, transform=transform, download=True)
+        testloader = DataLoader(testset, batch_size=batch_test, shuffle=False, **kwargs)
+    
+    return trainloader, testloader
 
 
 

@@ -1,5 +1,7 @@
 import torch
 
+from .pruning import apply_mask
+
 def accuracy_at_k(output, target, k=1):
     '''
     Returns accuracy@k for the current output of the net vs target (ground truth)
@@ -118,8 +120,22 @@ def train_net(net, epochs, criterion, optimizer, trainloader, device=None, perfo
             }
             torch.save(checkpoint_dict, save_checkpoint)
             print(f"Saved model checkpoint to {checkpoint_dict}")
+    return losses.avg, perf.avg
     
 def test_net(net, testloader, criterion, device=None, performance=accuracy_at_k):
+    '''Test the network on the specified testloader
+
+    Parameters:
+    net -- the neural network to train
+    criterion -- the loss function to use
+    optimizer -- the optimizer to use
+    device -- torch device where net and trainloader are stored (default: "cuda:0" if cuda is available, otherwise "cpu")
+    performance -- the performance function to assess the model (default: accuracy@1)
+    
+    Returns:
+    average loss for the test set
+    average performance for the training set
+    '''
     losses = AverageMeter()
     perf = AverageMeter()
 
@@ -143,6 +159,8 @@ def test_net(net, testloader, criterion, device=None, performance=accuracy_at_k)
         perf.update(perf_val, input_.size(0))
 
     print(f"===> TEST ### Loss {losses.avg} ### Performance {perf.avg}")
+
+    return losses.avg, perf.avg
 
 
 
