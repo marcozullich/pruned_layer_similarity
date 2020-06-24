@@ -27,5 +27,5 @@ def svd_reduction(tensor, var_fract_kept=.99):
     max_index_keep = len(np.where(var_cumulative_prop <= var_fract_kept)[0]) + 1
 
     # return the reduction of the layer
-    return u[:, max_index_keep] @ torch.diag(s[:max_index_keep])
+    return u[:, :max_index_keep] @ torch.diag(s[:max_index_keep])
     #return np.dot(u[:,:max_index_keep], np.diag(s[:max_index_keep]))
