@@ -29,3 +29,20 @@ def svd_reduction(tensor, var_fract_kept=.99):
     # return the reduction of the layer
     return u[:, :max_index_keep] @ torch.diag(s[:max_index_keep])
     #return np.dot(u[:,:max_index_keep], np.diag(s[:max_index_keep]))
+
+def reshape_4d_tensor(tensor, neurons_are_channels=False):
+    '''
+    Given a 4d torch.Tensor (datapoints, channels, height, width) reshapes it into a 2d tensor.
+    If neurons_are_channels, the tensor is reshaped s.t.
+    (datapoints, channels, height, width) -> (datapoints*height*width, channels)
+    Otherwise, the reshaping is performed such that the columns are the proper neurons of the representation
+    (datapoints, channels, height, width) -> (datapoints, channels*height*width)
+    '''
+    if len(tensor.shape) != 4:
+        raise AttributeError("The tensor needs to be 4D")
+    if neurons_are_channels:
+        dp_dim = tensor.size(0) * tensor.size(2) * tensor.size(3)
+        ch_dim = tensor.size(1)
+        return tensor.permute(0, 2, 3, 1).reshape(dp_dim, ch_dim)
+    else: #classic 4d -> 2d reshaping
+        return tensor.view(tensor.size(0), -1)

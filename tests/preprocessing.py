@@ -12,6 +12,7 @@ class testSVD(unittest.TestCase):
     def setUp(self):
         torch.manual_seed(0)
         self.tensor = torch.rand((50, 50))
+        self.tensor_4d = torch.rand((10,5,4,3))
     
     def test_svd_decomp(self):
         tensor_before = deepcopy(self.tensor)
@@ -32,3 +33,20 @@ class testSVD(unittest.TestCase):
         tensor_reduced = svd_reduction(self.tensor, var_fract_kept=.75)
         self.assertEqual(tensor_reduced.shape[0], 50)
         self.assertLess(tensor_reduced.shape[1], 38)
+
+    def test_reshaping_classic(self):
+        tensor_reshaped = reshape_4d_tensor(self.tensor_4d, neurons_are_channels = False)
+        self.assertEqual(tensor_reshaped.shape, torch.Size([10, 5*4*3]))
+        self.assertEqual(self.tensor_4d[0,2,0,1], tensor_reshaped[0,25])
+        self.assertEqual(self.tensor_4d[3,3,3,0], tensor_reshaped[3,45])
+        self.assertEqual(self.tensor_4d[2,3,1,2], tensor_reshaped[2,41])
+    
+    def test_reshaping_channels_as_neurons(self):
+        tensor_reshaped = reshape_4d_tensor(self.tensor_4d, neurons_are_channels = True)
+        self.assertEqual(tensor_reshaped.shape, torch.Size([10*4*3, 5]))
+        self.assertEqual(self.tensor_4d[0,2,0,1], tensor_reshaped[1,2])
+        self.assertEqual(self.tensor_4d[3,3,3,0], tensor_reshaped[45,3])
+        self.assertEqual(self.tensor_4d[2,3,1,2], tensor_reshaped[29,3])
+    
+    def test_reshaping_err(self):
+        self.assertRaises(AttributeError, reshape_4d_tensor, self.tensor)
