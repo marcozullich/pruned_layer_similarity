@@ -137,7 +137,11 @@ $$
 ## References
 
 [1] [Han, Song, et al. "Learning both weights and connections for efficient neural network." Advances in neural information processing systems. 2015.](http://papers.nips.cc/paper/5784-learning-both-weights-andconnections-)
+
 [2] [Renda, Alex, et al. "Comparing Rewinding and Fine-tuning in Neural Network Pruning." International Conference on Learning Representations. 2020](https://openreview.net/forum?id=S1gSj0NKvB)
+
 [3] [Raghu, Maithra, et al. "Svcca: Singular vector canonical correlation analysis for deep learning dynamics and interpretability." Advances in Neural Information Processing Systems. 2017.](http://papers.nips.cc/paper/7188-svcca-singular-vector-canonical-correlation-analysis-for-deep-understanding-and-improvement)
+
 [4] [Morcos, Ari, Maithra Raghu, and Samy Bengio. "Insights on representational similarity in neural networks with canonical correlation." Advances in Neural Information Processing Systems. 2018.](http://papers.nips.cc/paper/7815-insights-on-representational-similarity-in-neural-networks-with-canonical-correlation)
+
 [5] [Tang, Shuai, et al. "Similarity of Neural Networks with Gradients." arXiv preprint arXiv:2003.11498 (2020).](https://arxiv.org/abs/2003.11498)
