@@ -4,6 +4,9 @@ data/
 # pytorch dumps
 *.pt
 
+# vscode
+.vscode/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
