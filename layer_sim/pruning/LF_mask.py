@@ -11,7 +11,7 @@ def _build_pruning_mask(layers_dict, pruning_factor, previous_mask=None):
     '''
     # flatten and concatenate the layers in a single distribution in order to obtain the cutoff for pruning
     # using numpy since np.where is much faster than torch.where (at least on cpu)
-    layers_flat = np.concatenate([np.abs(layers_dict).flatten() for layer in layers_dict.values()])
+    layers_flat = np.concatenate([np.abs(layer).flatten() for layer in layers_dict.values()])
 
     # repeat for mask
     if previous_mask is not None:
@@ -21,8 +21,8 @@ def _build_pruning_mask(layers_dict, pruning_factor, previous_mask=None):
     
     layers_flat = np.sort(layers_flat)
 
-    cutoff_position = int(np.floor(pruning_factor) * layers_flat.shape[0])
-    cutoff_value = layers_flat[cutoff_position]
+    cutoff_position = int(np.floor(pruning_factor * layers_flat.shape[0]))
+    cutoff_value = layers_flat[cutoff_position-1]
 
     # build a submask containing 0s and 1s for all layers involved in pruning
     submask = {key: torch.from_numpy(np.where(np.abs(val.to("cpu")) > cutoff_value, 1, 0)) for key, val in layers_dict.items()}
@@ -94,4 +94,20 @@ def apply_mask(net, mask, gradient=False, sequential=False):
                 # in the state_dict
                 exec("model.%s.grad *= m.to(device)" % name)
         else:
-            state_dict[name] *= m.to(device)
+            state_dict[name] *= m.to(device).float()
+
+def mask_prop_params(mask, net=None):
+    '''
+    Determines the propotion of zeros within the given mask.
+    If no net is passed, the calculation is approximate and considers only
+    the parameters within the mask.
+    If the net is passed, the proportion is precise since a match with the
+    state_dict keys missing in the mask is performed.
+    '''
+    nonzero_els = sum([m.sum().item() for m in mask.values()])
+
+    if net is None:
+        return nonzero_els/sum([m.numel() for m in mask.values()])
+    else:
+        unpruned_params = sum([p.numel() for k, p in net.state_dict().items() if k not in mask.keys()])
+        return (nonzero_els + unpruned_params)/sum([p.numel() for p in net.state_dict().values()])
