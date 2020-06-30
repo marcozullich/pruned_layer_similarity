@@ -53,16 +53,16 @@ def train_net(net, epochs, criterion, optimizer, trainloader, device=None, perfo
     save_checkpoint -- path where the training checkpoint will be stored each epoch - note: will be overwritten each successive epoch (default: None)
     mask -- a torch structure containing the pruning mask - instrumental to operate pruning like IMP
     '''
-    if isinstance(epochs_annealing, int):
-        epochs_annealing = [epochs_annealing]
-    elif not isinstance(epochs_annealing, (list, tuple)):
-        raise TypeError(f"Unsupported type for epochs_annealing. Supported {(int, list, tuple)}. Found {type(epochs_annealing)}")
-
     if (epochs_annealing is None) != (lr_annealing_factor is None):
         raise AttributeError(f"epochs_annealing and lr_annealing_factor must be either both None or they must have a value. Found {epochs_annealing} and {lr_annealing_factor}")
     
     if epochs_annealing is None:
         epochs_annealing = []
+    else:
+        if isinstance(epochs_annealing, int):
+            epochs_annealing = [epochs_annealing]
+        elif not isinstance(epochs_annealing, (list, tuple)):
+            raise TypeError(f"Unsupported type for epochs_annealing. Supported {(int, list, tuple)}. Found {type(epochs_annealing)}")
 
     
     if device is None:

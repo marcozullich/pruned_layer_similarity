@@ -74,6 +74,7 @@ class LeNet5(nn.Module):
     * 2nd conv2d's 16 channels are all connected to the previous avgpool; in original implementation, only 10 of 16 are connected
     '''
     def __init__(self, num_classes):
+        super(LeNet5, self).__init__()
         self.features = nn.Sequential(
             nn.Conv2d(1, 6, kernel_size=5, stride=1),
             nn.ReLU(),
@@ -84,7 +85,7 @@ class LeNet5(nn.Module):
         )
         self.flat = Flatten()
         self.classifier = nn.Sequential(
-            nn.Linear(400, 120),
+            nn.Linear(256, 120),
             nn.ReLU(),
             nn.Linear(120, 84),
             nn.ReLU(),
@@ -95,6 +96,7 @@ class LeNet5(nn.Module):
         x = self.features(x)
         x = self.flat(x)
         x = self.classifier(x)
+        return x
 
     def forward_with_hooks(self, x):
         out = []
