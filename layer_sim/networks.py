@@ -16,6 +16,8 @@ class VGG_SVHN(nn.Module):
                 nn.ReLU()
             ]
 
+        super(VGG_SVHN, self).__init__()
+        
         feats = []
         # build feature extractor
         for i in range(1,5):

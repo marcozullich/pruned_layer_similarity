@@ -1,6 +1,6 @@
 import torch
 
-from .pruning import apply_mask
+from .pruning.LF_mask import apply_mask
 
 def accuracy_at_k(output, target, k=1):
     '''
