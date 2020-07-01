@@ -3,7 +3,7 @@ import os
 from ..train import train_net, test_net, accuracy_at_k
 from .LF_mask import lf_mask_global, apply_mask, mask_prop_params
 
-def imp_lrr(net, epochs, criterion, optimizer, trainloader, imp_iterations, device=None, pruning_factor=.2, iteration_restore=0, mask=None, performance=accuracy_at_k, testloader=None, save_path=None, save_pattern="IMP_checkpoint_{}.torch", layer_ids_to_prune=["conv"], **kwargs):
+def imp_lrr(net, epochs, criterion, optimizer, trainloader, imp_iterations, device=None, pruning_factor=.2, iteration_restore=0, mask=None, performance=accuracy_at_k, testloader=None, save_path=None, save_pattern="IMP_checkpoint_{}.pt", layer_ids_to_prune=["conv"], **kwargs):
     '''Runs IMP with Learning Rate Rewind for imp_iterations with a pruning factor of pruning_factor.
 
     Parameters:
