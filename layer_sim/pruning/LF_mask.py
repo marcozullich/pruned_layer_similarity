@@ -65,7 +65,7 @@ def lf_mask_global(net, pruning_factor=.2, previous_mask=None, layer_ids_to_prun
 
     return submask
 
-def apply_mask(net, mask, gradient=False, sequential=False):
+def apply_mask(net, mask, gradient=False, sequential=True):
     '''Applies (in-place) a mask to the given model (net), zeroing out the
     parameters corresponding to a 0 in the mask.
     If the option gradient is specified, zeroes out also the gradient for the
@@ -73,6 +73,8 @@ def apply_mask(net, mask, gradient=False, sequential=False):
     The option sequential identifies whether the net's layers are defined via
     the torch.nn.Sequential structure (distinction required due to a different
     handling of the gradient operations).
+    The flag sequential is needed only when applying the mask to the gradient
+    (i.e., during training)
     '''
 
     device = next(net.parameters()).device
@@ -94,7 +96,7 @@ def apply_mask(net, mask, gradient=False, sequential=False):
                 # in the state_dict
                 exec("model.%s.grad *= m.to(device)" % name)
         else:
-            state_dict[name] *= m.to(device).float()
+            state_dict[name] *= m.to(device)
 
 def mask_prop_params(mask, net=None):
     '''

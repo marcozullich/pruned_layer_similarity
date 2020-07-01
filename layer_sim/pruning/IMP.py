@@ -1,7 +1,7 @@
 import torch
 import os
 from ..train import train_net, test_net, accuracy_at_k
-from .LF_mask import lf_mask_global, apply_mask
+from .LF_mask import lf_mask_global, apply_mask, mask_prop_params
 
 def imp_lrr(net, epochs, criterion, optimizer, trainloader, imp_iterations, device=None, pruning_factor=.2, iteration_restore=0, mask=None, performance=accuracy_at_k, testloader=None, save_path=None, save_pattern="IMP_checkpoint_{}.torch", layer_ids_to_prune=["conv"], **kwargs):
     '''Runs IMP with Learning Rate Rewind for imp_iterations with a pruning factor of pruning_factor.
@@ -28,7 +28,7 @@ def imp_lrr(net, epochs, criterion, optimizer, trainloader, imp_iterations, devi
     layer_ids_to_prune -- list or tuple of (sub)strings identifying the layer
         names to be pruned. Useful to preserve some layers, e.g., batchnorm, from
         being touched by pruning. Can also contain regex patterns (default ["conv"])
-    **kwargs -- additional parameters (like annealing values) to be passed on to the training routine
+    **kwargs -- additional parameters (like annealing values and sequential flag) to be passed on to the training routine
 
 
     '''
@@ -49,6 +49,9 @@ def imp_lrr(net, epochs, criterion, optimizer, trainloader, imp_iterations, devi
 
         # 1. Determine current mask
         mask = lf_mask_global(net, pruning_factor=pruning_factor, previous_mask=mask, layer_ids_to_prune=layer_ids_to_prune)
+        print(f"Proportion of parameters in mask {mask_prop_params(mask, net)}")
+        mask = {k: m.to(device).float() for k, m in mask.items()}
+
 
         # 2. Apply the mask (= zero-out low magnitude parameters)
         apply_mask(net, mask)

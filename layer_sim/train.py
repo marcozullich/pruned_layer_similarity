@@ -37,7 +37,7 @@ def anneal_lr(optimizer, annealing_factor):
     
     return optimizer
 
-def train_net(net, epochs, criterion, optimizer, trainloader, device=None, performance=accuracy_at_k, epochs_annealing=None, lr_annealing_factor=None,  resume_checkpoint=None, save_checkpoint=None, mask=None):
+def train_net(net, epochs, criterion, optimizer, trainloader, device=None, performance=accuracy_at_k, epochs_annealing=None, lr_annealing_factor=None,  resume_checkpoint=None, save_checkpoint=None, mask=None, sequential=True):
     '''Trains a specified network
 
     Parameters:
@@ -52,6 +52,10 @@ def train_net(net, epochs, criterion, optimizer, trainloader, device=None, perfo
     resume_checkpoint -- a torch save containing the minimal elements for resuming training at an intermediate epoch (default: None)
     save_checkpoint -- path where the training checkpoint will be stored each epoch - note: will be overwritten each successive epoch (default: None)
     mask -- a torch structure containing the pruning mask - instrumental to operate pruning like IMP
+    sequential -- flag to indicate whether the net is made up of torch.nn.Sequential blocks
+
+    Returns:
+    tuple containing train loss and performance on last epoch
     '''
     if (epochs_annealing is None) != (lr_annealing_factor is None):
         raise AttributeError(f"epochs_annealing and lr_annealing_factor must be either both None or they must have a value. Found {epochs_annealing} and {lr_annealing_factor}")
@@ -77,6 +81,9 @@ def train_net(net, epochs, criterion, optimizer, trainloader, device=None, perfo
         optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         start_epoch = checkpoint['epoch']
         del checkpoint
+    
+    if mask is not None:
+        mask = {k:m.to(device).float() for k, m in mask.items()}
 
     for epoch in range(start_epoch, epochs):
         losses = AverageMeter()
@@ -93,7 +100,7 @@ def train_net(net, epochs, criterion, optimizer, trainloader, device=None, perfo
             loss.backward()
 
             if mask is not None: #apply mask to zero out gradient on masked-out elements
-                apply_mask(net, mask, gradient=True)
+                apply_mask(net, mask, gradient=True, sequential=sequential)
 
             # gradient clipping to avoid explosion
             torch.nn.utils.clip_grad.clip_grad_norm_(net.parameters(), 1)
@@ -134,7 +141,7 @@ def test_net(net, testloader, criterion, device=None, performance=accuracy_at_k)
     
     Returns:
     average loss for the test set
-    average performance for the training set
+    average performance for the test set
     '''
     losses = AverageMeter()
     perf = AverageMeter()
