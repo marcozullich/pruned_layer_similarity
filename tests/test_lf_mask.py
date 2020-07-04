@@ -38,8 +38,9 @@ class TestLFMask(unittest.TestCase):
         self.assertAlmostEqual(prop_params_mask_nonet, 0.8, places=4)
 
         prop_params_mask_net = mask_prop_params(mask, net)
-        self.assertAlmostEqual(prop_params_mask_net, 0.802, places=3)
+        self.assertAlmostEqual(prop_params_mask_net, 0.801, places=3)
 
+        mask = {k:m.float() for k, m in mask.items()}
         apply_mask(net, mask, sequential=True)
 
         submask_old = mask['features.7.weight'][0,:50]
