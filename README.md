@@ -81,10 +81,7 @@ If a layer has p neurons, we usually store all the activation of these neurons t
 There exist similarity matrix which take one step further for the determination of the layer and consider the Gram matrix obtained from the application of a given kernel (e.g., linear) to the activation matrix.
 In this case, the representation of the layer is an n × n symmetric positive semi-definite matrix.
 
-In the following sections, we will consider two generic fully-connected layers 
-![](images/layer_1_r.png)
-and
-![](images/layer_2_r.png)
+In the following sections, we will consider two generic fully-connected layers L<sub>1</sub> ∈ R<sup>n×p<sub>1</sub></sup> and L<sub>2</sub> ∈ R<sup>n×p<sub>2</sub></sup>
 
 
 ### Similarity metrics based on Canonical Correlation Analysis (CCA)
