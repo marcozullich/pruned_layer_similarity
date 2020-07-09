@@ -30,7 +30,7 @@ Pruning can be
 * structured.
 
 Unstructured pruning acts with no regard for the *position* of the neuron inside the NN; the connection is just cut, according to a given criterion, without considering in which layer it belongs, or where in the layer it is positioned.
-Structured pruning, on the other hand, cuts synapses in an organized fashion: for instance, all of the connections leading to a neuron may be pruned (thus removing the neuron from the NN) or to whole groups of neurons (e.g., those forming a *convolutional channel*).
+Structured pruning, on the other hand, cuts synapses in an organized fashion: for instance, all of the connections leading to a neuron may be pruned (thus removing the neuron from the NN) or to whole groups of neurons (e.g., those forming a *convolutional filter*).
 
 
 ![NN pruning](images/han_2015_pruning.png)
@@ -84,9 +84,11 @@ In the following sections, we will consider two generic fully-connected layers L
 
 ### Similarity metrics based on Canonical Correlation Analysis (CCA)
 
-CCA acts on the two layers by finding linear transforms such that the two layers get transforms into two sets of orthonormal vectors, Z<sub>1</sub> and Z<sub>2</sub>, in the n-dimensional real space.
+CCA acts on the two layers by finding linear transforms such that the two layers get transformed into two sets of orthonormal vectors, Z<sub>1</sub> and Z<sub>2</sub>, in the n-dimensional real space.
 The columns of Z<sub>1</sub> and Z<sub>2</sub> are built s.t. their residual Pearson correlation gets maximized: hence, we find a set of (decreasing) Pearson correlations ρ<sub>1</sub>,...,ρ<sub>p</sub>, where p = min(p<sub>1</sub>, p<sub>2</sub>).
+
 We can average those values obtaining the **Mean CCA Similarity**.
+
 A weighted average yields the **Projection Weighted CCA (PWCCA)**. Refer to [4] for more details.
 
 
@@ -121,7 +123,7 @@ It is calculated as
   - training (and testing) the net (`train.py`); nets architectures are in `networks.py` and are comprehensive of a method to get the representations out of all the layers of interest in these nets
   - pruning a fully-trained net using IMP(`pruning/` folder)
   - comparing representations of trained nets (`nn_comparison.py`)
-- A demo will be soon released for showcasing the application of this library to a small-scale problem; however, we provide all the tools to extend this analysis to larger datasets and networks.
+- A demo showcasing the application of this library to a small-scale problem; however, te demo provides all the tools to extend this analysis to larger datasets and networks.
 
 
 ## Abouts the Authors
