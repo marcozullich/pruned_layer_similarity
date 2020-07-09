@@ -34,12 +34,10 @@ Pruning can be
 Unstructured pruning acts with no regard for the *position* of the neuron inside the NN; the connection is just cut, according to a given criterion, without considering in which layer it belongs, or where in the layer it is positioned.
 Structured pruning, on the other hand, cuts synapses in an organized fashion: for instance, all of the connections leading to a neuron may be pruned (thus removing the neuron from the NN) or to whole groups of neurons (e.g., those forming a *convolutional channel*).
 
-<figure class="image">
-  <img src="{{ images/han_2015_pruning.png }}" alt="{{ NN pruning }}">
-  <figcaption>{{ Examplification of NN pruning. Image taken from [1] }}</figcaption>
-</figure>
 
-<!--![**Fig. 1**: exemplification of NN pruning. Image taken from [1]](images/han_2015_pruning.png)-->
+![NN pruning](images/han_2015_pruning.png)
+*Exemplification of NN pruning. Image taken from [1]*
+
 
 In the figure above, the two types of NN pruning are exemplified:
 - unstructured pruning removes connections with a criterion not dependent from the position inside the NN / the layer;
@@ -84,9 +82,9 @@ There exist similarity matrix which take one step further for the determination 
 In this case, the representation of the layer is an n × n symmetric positive semi-definite matrix.
 
 In the following sections, we will consider two generic fully-connected layers 
-![](images/layer_1.png)
+![](images/layer_1_r.png)
 and
-![](images/layer_2.png)
+![](images/layer_2_r.png)
 
 
 ### Similarity metrics based on Canonical Correlation Analysis (CCA)
@@ -108,7 +106,7 @@ It was proposed in [5] as a similarity metric for layers of NNs.
 
 Given K<sub>1</sub>, K<sub>2</sub> centered Gram matrices obtained by applying a kernel function to the rows of L<sub>1</sub>, L<sub>2</sub>, it is calculated as
 
-![](images/cka.png)
+![](images/cka_r.png)
 
 where ||•||<sub>F</sub> represents the Frobenius norm.
 
@@ -120,7 +118,7 @@ It was proposed in [6] as a similarity metric for layers of NNs.
 
 It is calculated as
 
-![](images/nbs.png)
+![](images/nbs_r.png)
 
 ## Content of this repo
 
