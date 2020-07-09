@@ -5,11 +5,9 @@ Currently, the paper is undergoing a review process by Springer for the selectio
 
 The paper is itself an extension of a previous publication of ours, ["On the Simlarity between Hidden Layers of Pruned and Unpruned Convolutional Neural Networks"](https://www.insticc.org/Primoris/Resources/PaperPdf.ashx?idPaper=89603).
 
-In this repository, we are going to provide a minimal library (written in Python) for the sake of reproducibility of the experiments contained in both the papers above.
+In this repository, we provide a minimal library (written in Python) for the sake of reproducibility of the experiments contained in both the papers above.
 
-* The library is currently undergoing a testing phase and is visible under [the testing branch](https://github.com/marcozullich/pruned_layer_similarity/tree/testing).
-
-An IPython Notebook will soon be added containing a demo showcasing the application of the library on a small-scale dataset like MNIST.
+The Jupiter notebook [MNIST_demo](notebooks/MNIST_demo.ipynb) provides an example of usage of this library on the popular MNIST dataset. Note that this notebook is merely an explanation of usage of the `layer_sim` library and doesn't focus on the performance of the provided NNs nor on the accurate analysis of the resulting similarities: we run it on MNIST so that everyone may reproduce the results in a small enough amount of time on a medium-sized machine without a CUDA-capable GPU.
 
 
 ## Installation tips
