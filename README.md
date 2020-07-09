@@ -27,12 +27,19 @@ You need Python 3.6+ to run this library
 
 Essentially, pruning a NN is the act of removing one of more of the connections (also called *synapses*) between neurons.
 Pruning can be
+
 * unstructured
 * structured.
+
 Unstructured pruning acts with no regard for the *position* of the neuron inside the NN; the connection is just cut, according to a given criterion, without considering in which layer it belongs, or where in the layer it is positioned.
 Structured pruning, on the other hand, cuts synapses in an organized fashion: for instance, all of the connections leading to a neuron may be pruned (thus removing the neuron from the NN) or to whole groups of neurons (e.g., those forming a *convolutional channel*).
 
-![**Fig. 1**: exemplification of NN pruning. Image taken from [1]](images/han_2015_pruning.png)
+<figure class="image">
+  <img src="{{ images/han_2015_pruning.png }}" alt="{{ NN pruning }}">
+  <figcaption>{{ Examplification of NN pruning. Image taken from [1] }}</figcaption>
+</figure>
+
+<!--![**Fig. 1**: exemplification of NN pruning. Image taken from [1]](images/han_2015_pruning.png)-->
 
 In the figure above, the two types of NN pruning are exemplified:
 - unstructured pruning removes connections with a criterion not dependent from the position inside the NN / the layer;
@@ -70,19 +77,22 @@ Thus, we wish for similarity metrics which are
 ### Representations of layers
 
 In order to compare layers, we need to get a view of the possible responses of each neuron to all the possible inputs of the NN.
-Since it is impossible to get a full view of the infinite activations that a neuron may exhibit, we usually evaluate the network on a (possibly large and representative of the data manifold) set of $n$ data points.
-If a layer has $p$ neurons, we usually store all the activation of these neurons to the $n$ data points, obtaining a $n \times p$ matrix also called *activation matrix* which acts as the representation of this layer [3].
+Since it is impossible to get a full view of the infinite activations that a neuron may exhibit, we usually evaluate the network on a (possibly large and representative of the data manifold) set of n data points.
+If a layer has p neurons, we usually store all the activation of these neurons to the n data points, obtaining a n × p matrix also called *activation matrix* which acts as the representation of this layer [3].
 
 There exist similarity matrix which take one step further for the determination of the layer and consider the Gram matrix obtained from the application of a given kernel (e.g., linear) to the activation matrix.
-In this case, the representation of the layer is an $n \times n$ symmetric positive semi-definite matrix.
+In this case, the representation of the layer is an n × n symmetric positive semi-definite matrix.
 
-In the following sections, we will consider two generic fully-connected layers $L_1 \in \mathbb{R}^{n \times p_1}$ and $L_2 \in \mathbb{R}^{n \times p_2}$.
+In the following sections, we will consider two generic fully-connected layers 
+![](images/layer_1.png)
+and
+![](images/layer_2.png)
 
 
 ### Similarity metrics based on Canonical Correlation Analysis (CCA)
 
-CCA acts on the two layers by finding linear transforms such that the two layers get transforms into two sets of orthonormal vectors, $Z_1$ and $Z_2$, in the $\mathbb{R}^n$ space.
-The columns of $Z_1$ and $Z_2$ are built s.t. their residual Pearson correlation gets maximized: hence, we find a set of (decreasing) Pearson correlations $\rho_1,\dots,\rho_p$, where $p = \min(p_1, p_2)$.
+CCA acts on the two layers by finding linear transforms such that the two layers get transforms into two sets of orthonormal vectors, Z<sub>1</sub> and Z<sub>2</sub>, in the n-dimensional real space.
+The columns of Z<sub>1</sub> and Z<sub>2</sub> are built s.t. their residual Pearson correlation gets maximized: hence, we find a set of (decreasing) Pearson correlations ρ<sub>1</sub>,...,ρ<sub>p</sub>, where p = min(p<sub>1</sub>, p<sub>2</sub>).
 We can average those values obtaining the **Mean CCA Similarity**.
 A weighted average yields the **Projection Weighted CCA (PWCCA)**. Refer to [4] for more details.
 
@@ -93,29 +103,24 @@ A weighted average yields the **Projection Weighted CCA (PWCCA)**. Refer to [4] 
 #### Centered Kernel Alignment (CKA)
 
 
-CKA is a normalized similarity metric measuring the (in)dependence between two sets of features and acts on the kernels (Gram matrices) of the two layers $L_1, L_2$.
+CKA is a normalized similarity metric measuring the (in)dependence between two sets of features and acts on the kernels (Gram matrices) of the two layers L<sub>1</sub>, L<sub>2</sub>.
 It was proposed in [5] as a similarity metric for layers of NNs.
 
-Given $K_1, K_2$ centered Gram matrices obtained by applying a kernel function to the rows of $L_1, L_2$, it is calculated as
+Given K<sub>1</sub>, K<sub>2</sub> centered Gram matrices obtained by applying a kernel function to the rows of L<sub>1</sub>, L<sub>2</sub>, it is calculated as
 
-$$
-\frac{\text{Trace}(K_1 K_2)}{\lVert K_1 \lVert_F \cdot \lVert K_2 \lVert_F}
-$$
+![](images/cka.png)
 
-where $\lVert \cdot \lVert_F$ represents the Frobenius norm.
+where ||•||<sub>F</sub> represents the Frobenius norm.
 
 
 #### Normalized Bures Similarity (NBS)
 
-NBS is similar to CKA, but tries to quantify the *transport* between two probability distributions.
+NBS is similar to CKA, but tries to quantify the *optimal transport* between two probability distributions.
 It was proposed in [6] as a similarity metric for layers of NNs.
 
 It is calculated as
 
-$$
-\frac{\sqrt{\text{Trace}(K_1^{0.5} K_2 K_1^{0.5})}}{\text{Trace}(K_1)\text{Trace}(K_2)}.
-$$
-
+![](images/nbs.png)
 
 ## Content of this repo
 
