@@ -33,7 +33,7 @@ class CNN(nn.Module):
         x = self.classifier(x)
         return x
     
-    def _hook_layers(self, sequential, x, layer_types_to_hook):
+    def _hook_layers(self, sequential, x, layer_types_to_hook, grad=False):
         '''
         retains in a list the outputs of the given types of layers in response
         to x.
@@ -50,33 +50,39 @@ class CNN(nn.Module):
         a list containing the outputs of the selected layers (modules)
         '''
         out = []
+        grad = []
         for layer in sequential:
             x = layer(x)
             if isinstance(layer, layer_types_to_hook):
                 out.append(x)
-        
         return x, out
     
     def forward_with_hooks(self, x, layer_types_to_hook=(nn.ReLU, nn.MaxPool2d)):
         out = []
+        grad = []
         for seq in (self.features, self.flat, self.classifier):
             x, out_seq = self._hook_layers(seq, x, layer_types_to_hook=layer_types_to_hook)
             out.extend(out_seq)
+            
 
         # output layer is a special case - a nn.Linear without activation fct.
         if not isinstance(self.classifier[-1], layer_types_to_hook):
             out.append(x)
+            
 
         return out
       
     
-    def extract_network_representation(self, dataloader, limit_datapoints=5000, layer_types_to_hook=(nn.ReLU, nn.MaxPool2d), device=None):
+    def extract_network_representation(self, dataloader, limit_datapoints=5000, layer_types_to_hook=(nn.ReLU, nn.MaxPool2d), device=None, retain_grad=True, loss_fn=None):
         '''
         Extract the activation matrices of the layers of the network (for the 
         desired layer_types) given a dataloader. The number of datapoints of
         the representation can also be specified using limit_datapoints (defaults
         to 5000)
         '''
+        if retain_grad and loss_fn is None:
+            raise RuntimeError("If retain_grad, a loss_fn must be passed")
+
         self.eval()
 
         if device is None:
@@ -92,25 +98,35 @@ class CNN(nn.Module):
         elif repr_datapoints < limit_datapoints:
             raise RuntimeError(f"The dataloader has not enough datapoints to compute the representations. Required {limit_datapoints}; found {repr_datapoints}")
 
-        for i, (input_, _) in enumerate(dataloader):                
-            if input_.size(0) + evaluated_datapoints > limit_datapoints:
-                n_batch = limit_datapoints - evaluated_datapoints
-            else:
-                n_batch = input_.size(0)
-            input_ = input_[:n_batch].to(device)
-            
-            repr_batch = self.forward_with_hooks(input_, layer_types_to_hook=layer_types_to_hook)
+        with torch.set_grad_enabled(retain_grad):
+            for i, (input_, _) in enumerate(dataloader):
+                if input_.size(0) + evaluated_datapoints > limit_datapoints:
+                    n_batch = limit_datapoints - evaluated_datapoints
+                else:
+                    n_batch = input_.size(0)
+                input_ = input_[:n_batch].to(device)
+                
+                repr_batch = self.forward_with_hooks(input_, layer_types_to_hook=layer_types_to_hook)
+                if retain_grad:
+                    loss = loss_fn(repr_batch[-1])
+                    loss.backward()
 
-            if i == 0:
-                representation = [torch.empty([limit_datapoints] + list(r.shape[1:])) for r in repr_batch]
+                if i == 0:
+                    representation = [torch.empty([limit_datapoints] + list(r.shape[1:])) for r in repr_batch]
+                    if retain_grad:
+                        for r in representation:
+                            r.grad = torch.zeros_like(r)
 
-            for j in range(len(representation)):
-                representation[j][evaluated_datapoints : (evaluated_datapoints + n_batch)] = repr_batch[j]
 
-            evaluated_datapoints += n_batch
+                for j in range(len(representation)):
+                    representation[j][evaluated_datapoints : (evaluated_datapoints + n_batch)] = repr_batch[j]
+                    if retain_grad:
+                        representation[j].grad[evaluated_datapoints : (evaluated_datapoints + n_batch)] = repr_batch[j].grad
 
-            if evaluated_datapoints >= limit_datapoints:
-                break
+                evaluated_datapoints += n_batch
+
+                if evaluated_datapoints >= limit_datapoints:
+                    break
     
         return representation
         
