@@ -1,7 +1,7 @@
 import torch
 
 def _centering(kernel):
-    return kernel - kernel.mean(0) - kernel.mean(1) + kernel.mean()
+    return kernel - kernel.mean(0, keepdims=True) - kernel.mean(1, keepdims=True) + kernel.mean()
 
 def cka(kernel1, kernel2):
     '''
